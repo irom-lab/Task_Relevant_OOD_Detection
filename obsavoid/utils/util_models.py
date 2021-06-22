@@ -9,11 +9,11 @@ def make_dir(dir_path):
 
 def save_weights(policy, save_file_name=''):
     make_dir('weights')
-    torch.save(policy.state_dict(), 'weights/' + save_file_name + '.pt')
+    torch.save(policy.state_dict(), 'obsavoid/weights/' + save_file_name + '.pt')
 
 
 def load_weights(policy, save_file_name=''):
-    policy.load_state_dict(torch.load("weights/" + save_file_name + ".pt"))
+    policy.load_state_dict(torch.load("obsavoid/weights/" + save_file_name + ".pt"))
     return policy
 
 
@@ -68,7 +68,7 @@ def get_weight_samples(num_policies, file_name):
 
 
 def load_data(app='', option=None):
-    path = "./matlab_gen_data/data/"
+    path = "./obsavoid/matlab_gen_data/data/"
     app = app + ".m"
     depth_maps = torch.Tensor(scipy.io.loadmat(path + "depth_maps" + app)['depth_maps'].astype('float32')).unsqueeze(1)
 

@@ -1,11 +1,11 @@
 import numpy as np
-from models.models_swing import SPolicy
 import warnings
 import torch
 import json
-from utils.util_models import run_policy, load_data, load_weights
-from utils.util import plot_wind, plot_cardinality, plot_compare_precision
-from utils.util_oodd import p_value, confidence, msp, maxlogit
+from obsavoid.models.models_swing import SPolicy
+from obsavoid.utils.util_models import run_policy, load_data, load_weights
+from obsavoid.utils.util import plot_wind, plot_cardinality, plot_compare_precision
+from util_oodd import ood_p_value_batch, ood_confidence_batch, ood_msp_batch, ood_maxlogit_batch
 warnings.filterwarnings('ignore')
 
 policy_path = 'post_1'
@@ -46,7 +46,7 @@ def get_task_irrelevant_data():
 
 
 def get_hardware_data():
-    data = json.load(open('hardware_data.json','r'))
+    data = json.load(open('obsavoid/hardware_data.json','r'))
     return data
 
 
@@ -94,13 +94,13 @@ def get_comparison_detections(policy, data, upper_bound, m=10, trials=20):
             cost = cost[p]
             model_output = model_output[p]
 
-            p_ood = p_value(cost[:m], upper_bound, batch=True)
+            p_ood = ood_p_value_batch(cost[:m], upper_bound, batch=True)
             p_oods.append(p_ood)
-            c_ood = confidence(cost[:m], upper_bound, batch=True)
+            c_ood = ood_confidence_batch(cost[:m], upper_bound, batch=True)
             c_oods.append(c_ood)
-            msp_ood = msp(model_output[:m], batch=True)
+            msp_ood = ood_msp_batch(model_output[:m], batch=True)
             msp_oods.append(msp_ood)
-            maxlogit_ood = maxlogit(model_output[:m], batch=True)
+            maxlogit_ood = ood_maxlogit_batch(model_output[:m], batch=True)
             maxlogit_oods.append(maxlogit_ood)
 
         ps[:, trial] = p_oods
@@ -116,8 +116,8 @@ def get_hardware_detections(cost_data, upper_bound):
     cs = []
     for key in cost_data:
         cost = hardware_data[key]
-        p = p_value(cost, upper_bound, batch=True)
-        c = confidence(cost, upper_bound, batch=True)
+        p = ood_p_value_batch(cost, upper_bound, batch=True)
+        c = ood_confidence_batch(cost, upper_bound, batch=True)
         if 'w' in key or 'id' in key:
             ps.append(p)
             cs.append(c)
@@ -140,7 +140,7 @@ def get_detection_bound(policy, data, upper_bound, max_m=10, trials=10):
     for trial in range(trials):
         p = np.random.permutation(len(cost))
         cost = cost[p]
-        c_ood = confidence(cost[:max_m], upper_bound, batch=False, deltap=0.09)
+        c_ood = ood_confidence_batch(cost[:max_m], upper_bound, batch=False, deltap=0.09)
         cs[:, trial] = c_ood
 
     return cs, cdpmcd
@@ -161,14 +161,14 @@ def get_thresholds(policy, data, m=10, trials=1000, max_fp=0.05):
         p = np.random.permutation(len(model_output))
         model_output = model_output[p]
 
-        p_id = p_value(cost[:m], upper_bound, batch=True)
+        p_id = ood_p_value_batch(cost[:m], upper_bound, batch=True)
         p_ids.append(p_id)
-        c_id = confidence(cost[:m], upper_bound, batch=True)
+        c_id = ood_confidence_batch(cost[:m], upper_bound, batch=True)
         c_ids.append(c_id)
 
-        msp_id = msp(model_output[:m], batch=True)
+        msp_id = ood_msp_batch(model_output[:m], batch=True)
         msp_ids.append(msp_id)
-        maxlogit_id = maxlogit(model_output[:m], batch=True)
+        maxlogit_id = ood_maxlogit_batch(model_output[:m], batch=True)
         maxlogit_ids.append(maxlogit_id)
 
     c_threshold = np.percentile(c_ids, 100 - 100*max_fp)
@@ -183,7 +183,7 @@ policy = SPolicy()
 load_weights(policy, policy_path)
 torch.manual_seed(2)
 policy.init_xi()  # will be the same as when computing the bound since we use same seed
-params = np.load('weights/' + policy_path + '.npy')
+params = np.load('obsavoid/weights/' + policy_path + '.npy')
 upper_bound = params[1]
 
 fig1 = 1

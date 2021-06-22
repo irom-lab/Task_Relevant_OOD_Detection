@@ -1,9 +1,9 @@
 import torch.nn as nn
-from models.layers import StochasticLinear as SLinear
-from models.layers import StochasticConv2d as SConv2d
-from models.layers import NotStochasticLinear as Linear
-from models.layers import NotStochasticConv2d as Conv2d
-from models.layers import StochasticModel
+from obsavoid.models.layers import StochasticLinear as SLinear
+from obsavoid.models.layers import StochasticConv2d as SConv2d
+from obsavoid.models.layers import NotStochasticLinear as Linear
+from obsavoid.models.layers import NotStochasticConv2d as Conv2d
+from obsavoid.models.layers import StochasticModel
 
 
 class NSPolicy(StochasticModel):
