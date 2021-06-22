@@ -2,7 +2,6 @@ clear;
 close all;
 folder = "data/";
 load('trajectory_primitives.mat');
-verbose = 0;
 
 easy = 0;
 hard = 0;

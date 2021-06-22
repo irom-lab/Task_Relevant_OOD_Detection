@@ -1,5 +1,5 @@
 function min_dist = get_min_dist(obs, prim_mean)
-%minimum distance of the obstacles using full state knowledge
+% minimum distance of the obstacles using full state knowledge
 
 if obs ==[-1, -1, -1]
     min_dist = 1e8;

@@ -80,24 +80,7 @@ for i=1:1:num_envs
 
             break
             
-
         end
-        
-
-    end
-    
-    if verbose
-        figure(1);
-        hold on
-        viscircles(obs(:,1:2), obs(:,3));
-        min_dists(1,:);
-        softmax(min_dists(1,:)'/1e3)
-        daspect([1 1 1]);
-        for j = 1:num_prims
-            scatter(trajectories(1,j,:,1),trajectories(1,j,:,2),'o')
-        end
-
-        break
     end
 end
 
@@ -111,14 +94,7 @@ prim_cost(1,:);
 dist_softmax = softmax(min_dists'/1e3)';
 
 
+save(folder + 'depth_maps' + add_app + ".m",'depth_maps');
+save(folder + 'dist_softmax' + add_app + ".m" ,'dist_softmax');
+save(folder + 'prim_cost' + add_app + ".m",'prim_cost');  % continuous cost based on distance to closest obstacle
 
-loc = folder;
-app = add_app + ".m";
-
-
-if ~verbose
-    save(loc + 'depth_maps' + app,'depth_maps');
-    save(loc + 'dist_softmax' + app ,'dist_softmax');
-    save(loc + 'prim_cost' + app,'prim_cost');  % continuous cost based on distance to closest obstacle
-    % save(loc + 'prim_collision' + app,'prim_collision');  % boolean on if collision happened
-end
