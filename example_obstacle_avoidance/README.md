@@ -1,24 +1,27 @@
 # Task-Driven Out-of-Distribution Detection
 
 This code uses the following:
-- pytorch ≥ 1.4.0
+- python ≥ 3.8
+- pytorch ≥ 1.7.1
 - matplotlib
 - scipy
 
 If you are using Anaconda, you can run the following commands to create an environment and install the necessary packages.
 ```
-conda create -n todd
+conda create -n todd python=3.8
 conda activate todd
-conda install pytorch=1.4.0 -c pytorch
+conda install pytorch=1.7.1 -c pytorch
 pip install matplotlib scipy
 ```
 ## Swing example
 #### Data
-Go to [this link](https://drive.google.com/file/d/1zpqZbxp-7z3HOktoru5qvEx4ah7FBHBM/view?usp=sharing) and download the zip file of all the data used in this example. Unzip the folder and place the contents into `./matlab_gen_data/data/` of this repository. Alternatively, using Matlab, run `./matlab_gen_data/gen_data.m` to generate all training and testing data necessary for this example. 
+Go to [this link](https://drive.google.com/file/d/1zpqZbxp-7z3HOktoru5qvEx4ah7FBHBM/view?usp=sharing) and download the zip file of all the data used in this example. 
+Unzip the folder and place the contents into `./matlab_gen_data/data/`. Alternatively, using Matlab, run `./matlab_gen_data/gen_data.m` to generate all training and testing data necessary for this example. 
 
 #### Training
-You may skip this step and use the pre-trained network in the `weights` folder. This pre-trained network was deployed on the hardware setup. Alternatively,
-run the following commands to train the network and compute the PAC-Bayes bound:
+You may skip this step and use the pre-trained network in the `weights` folder. 
+This pre-trained network was deployed on the hardware setup. 
+Alternatively, run the following commands to train the network and compute the PAC-Bayes bound:
 ```
 python train.py --step 0  # trains prior
 python train.py --step 1  # trains posterior
