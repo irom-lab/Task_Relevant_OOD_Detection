@@ -1,43 +1,10 @@
-# Task-Driven Out-of-Distribution Detection
+# Task-Driven Out-of-Distribution Detection for Robot Learning
+This repository contains code for the out-of-distribution (OOD) detection approach presented in the paper titled: Task-Driven Out-of-Distribution Detection with Statistical Guarantees for Robot Learning. 
 
+OOD detection refers to the task of detecting when a robot is operating in environments that are drawn from a different distribution than the environments used to train the robot. Our key idea for OOD detection relies on the following intuition: violation of the performance bound on test environments provides evidence that the robot is operating OOD. This idea is formalized via statistical techniques based on p-values and concentration inequalities. The resulting approach (i) provides guaranteed confidence bounds on OOD detection, and (ii) is task-driven and sensitive only to changes that impact the robot’s performance.
 
-## Grasping Example
+The code for computing the p-values and the confidence intervals is available in this file: [ood_detect.py](https://github.com/irom-lab/Task_Relevant_OOD_Detection/blob/include-grasp/ood_detect.py).
 
-
-
-
-
-## Vision-Based Obstacle Avoidance
-The code uses the following:
-- python = 3.8
-- pytorch = 1.7.1
-- matplotlib
-- scipy
-
-If you are using Anaconda, you can run the following commands to create an environment and install the necessary packages.
-```
-conda create -n todd python=3.8
-conda activate todd
-conda install pytorch=1.7.1 -c pytorch
-pip install matplotlib scipy
-```
-
-#### Data
-Go to [this link](https://drive.google.com/file/d/1zpqZbxp-7z3HOktoru5qvEx4ah7FBHBM/view?usp=sharing) and download the zip file of all the data used in this example. 
-Unzip the folder and place the contents into `./obsavoid/matlab_gen_data/data/`. 
-Alternatively, using Matlab, run `./obsavoid/matlab_gen_data/gen_data.m` to generate all training and testing data necessary for this example. 
-
-#### Training
-You may skip this step and use the pre-trained network in the `./obsavoid/weights` folder. 
-This pre-trained network was deployed on the hardware setup. 
-Alternatively, run the following commands to train the network and compute the PAC-Bayes bound:
-```
-python train_obsavoid.py --step 0  # trains prior
-python train_obsavoid.py --step 1  # trains posterior
-python train_obsavoid.py --step 2  # computes PAC-Bayes bound
-```
-Weights and bound values are saved into the `obsavoid/weights` folder. 
-If you train your own network, change `policy_path` in `oodd_obsavoid.py` to match `policy_path` in `train_obsavoid.py`.
-
-#### Testing
-Run `python oodd_obsavoid.py` to generate the plots and results that were used in this example.
+This approach is applied on the tasks of robotic grasping and navigation of a drone through obstacle fields. Details of the code for the robotic tasks can be found in the README of the following folders:
+1. [Grasp](https://github.com/irom-lab/Task_Relevant_OOD_Detection/tree/include-grasp/grasp)
+2. [Navigate](https://github.com/irom-lab/Task_Relevant_OOD_Detection/tree/include-grasp/navigate)
