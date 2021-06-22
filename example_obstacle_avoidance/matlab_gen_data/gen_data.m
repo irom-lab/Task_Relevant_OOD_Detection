@@ -15,6 +15,7 @@ add_app = "";
 % are mostly straight
 use_depth = 0;
 
+
 %% Data for training prior, training posterior, and testing
 num_envs = 10000;
 num_obs = 9;
