@@ -11,27 +11,6 @@ warnings.filterwarnings('ignore')
 policy_path = 'post_1'
 
 
-def test_swing_policy(policy_path):
-    depth_maps, prim_collision = load_data(app='_test_solvable', option='prim_collision')
-    _, prim_costs = load_data(app='_test_solvable', option='prim_cost')
-
-    model = SPolicy()
-    load_weights(model, policy_path)
-    model.init_xi()
-
-    num_envs = depth_maps.shape[0]
-
-    y = torch.zeros((num_envs, 1))
-    x = model(depth_maps)
-    prims = (x.max(dim=1).indices).tolist()
-
-    for (j, prim) in enumerate(prims):
-        y[j] = prim_collision[j, prim]
-
-    print(sum(y)/len(y)*100)
-    exit()
-
-
 def get_increasing_difficulty_data():
     OOD_data = {'OOD_vd-5': load_data(app='_vd-9', option='prim_cost'),
                 'OOD_vd-4': load_data(app='_vd-4', option='prim_cost'),
@@ -142,7 +121,7 @@ def get_hardware_detections(cost_data, upper_bound):
         if 'w' in key or 'id' in key:
             ps.append(p)
             cs.append(c)
-            print(key, np.mean(cost), p, c)
+            # print(key, np.mean(cost), p, c)
         else:
             print(key, np.mean(cost), p, c)
     return ps, cs
