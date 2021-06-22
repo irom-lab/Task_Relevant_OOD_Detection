@@ -1,0 +1,11 @@
+{
+    "device":"cpu",
+    "num_cpus": 10,
+    "long_finger":1,
+    "actor_pr_path":"Weights/policy.pt",
+    "out_cnn_dim":40,
+    "z_conv_dim":2,
+    "z_mlp_dim":8,
+    "obj_folder":"geometry/mugs/SNC_v4_mug_xs/",
+    "info_file": "Weights/train_details"
+}
