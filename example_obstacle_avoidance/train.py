@@ -178,6 +178,6 @@ if step == 2:
     # print("Maurer", emp_cost + reg_pac_bayes_k)
     # pac_bound = kl_inv_l(emp_cost, Rg_k)
     # print("KL-inv", pac_bound)
-    print("Derandomized", emp_cost + reg_pac_bayes_r)
+    print("Pointwise PAC-Bayes", emp_cost + reg_pac_bayes_r)
 
     np.save('weights/'+post_path+'.npy', (emp_cost, emp_cost + reg_pac_bayes_r))
