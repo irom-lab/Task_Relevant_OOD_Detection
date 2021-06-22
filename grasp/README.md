@@ -13,12 +13,14 @@ The training and test data was generated from the [ShapeNet dataset](https://sha
 
 ## Training
 Training can be performed by running `trainGrasp_es.py` as follows:
-```(python)
+```python
 python trainGrasp_es.py train_config
 ```
 where `train_config` refers to the `train_config.json` file which includes the path the training dataset of mugs as well as other hyperparameters. Pre-trained weights are provided in `Weights/` folder.
 
 **Note:** Since we cannot share the ShapeNet dataset, the training code cannnot be executed out of the box.
 
-#### Testing
-Run `python oodd_obsavoid.py` to generate the plots and results that were used in this example.
+## Compute the derandomized PAC-Bayes bound
+Run `python grasp_test.py` to compute the [derandomized PAC-Bayes](https://arxiv.org/pdf/2102.08649.pdf) bound.
+
+## OOD Detection Results:
