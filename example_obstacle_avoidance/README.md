@@ -1,8 +1,8 @@
 # Task-Driven Out-of-Distribution Detection
 
 This code uses the following:
-- python ≥ 3.8
-- pytorch ≥ 1.7.1
+- python = 3.8
+- pytorch = 1.7.1
 - matplotlib
 - scipy
 

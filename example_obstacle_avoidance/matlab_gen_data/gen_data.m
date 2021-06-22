@@ -2,7 +2,7 @@ clear;
 close all;
 folder = "data/";
 addpath('functions');
-load('matlab_files/prims.mat');
+load('trajectory_primitives.mat');
 verbose = 0;
 
 easy = 0;

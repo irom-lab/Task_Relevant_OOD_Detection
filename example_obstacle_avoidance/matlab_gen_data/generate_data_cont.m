@@ -47,9 +47,6 @@ for i=1:1:num_envs
         end
         
         for j=1:num_prims
-            % prim_mean = traj_mean{j};
-            % prim_std = traj_std{j};
-            % traj =  generate_trajectory(imu, prim_mean, prim_std);
             k = randsample(length(prims{j}),1);
             traj = prims{j}{k};
             
