@@ -8,7 +8,7 @@ from util.plotter import plot_object_type
 
 import sys
 sys.path.insert(0, '..')
-from utils.util_oodd import ood_confidence, ood_p_value
+from ood_detect import ood_confidence, ood_p_value
 
 if __name__ == "__main__":
     
