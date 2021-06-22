@@ -1,6 +1,5 @@
 function min_dist = get_min_dist(obs, prim_mean)
-%CHECK_COLLISION Returns minimum distance of the obstacles from a primitive
-% trajectory distribution
+%minimum distance of the obstacles using full state knowledge
 
 if obs ==[-1, -1, -1]
     min_dist = 1e8;

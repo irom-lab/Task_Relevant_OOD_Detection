@@ -9,7 +9,6 @@ min_dists = zeros(num_envs, num_prims);
 env_prim_collision = zeros(num_envs, num_prims);
 trajectories = zeros(num_envs, num_prims, T, 6);
 
-
 % Note: all distances are in mm
 imu = zeros(1,6) + [0 0 1000 0 0 -180];
 num_rays = img_size;
@@ -49,11 +48,22 @@ for i=1:1:num_envs
         for j=1:num_prims
             k = randsample(length(prims{j}),1);
             traj = prims{j}{k};
-            
             trajectories(i, j, :, :) = traj(1:T,:);
             
-            min_dist = get_min_dist(obs, traj);
+            if use_depth
+                min_dist = 1e8;
+                for pos = traj'
+                    deptharray = getDepthMatrix(pos' + imu, ths, phis, obs, {}, maxrng);
+                    deptharray = deptharray/maxrng;
+                    deptharray = flip(deptharray,2);
+                    min_dist = min(min_dist, get_min_dist_depth(deptharray, ths, phis, maxrng));
+                end
+            else
+            	min_dist = get_min_dist(obs, traj);
+            end
+            
             min_dists(i,j) = min_dist;
+            
         end
         
         exit_cond(1) = max(min_dists(i,:))>100 && min(cond_ind == [0,0,0,0]);

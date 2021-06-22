@@ -1,7 +1,6 @@
 clear;
 close all;
 folder = "data/";
-addpath('functions');
 load('trajectory_primitives.mat');
 verbose = 0;
 
@@ -11,6 +10,10 @@ variable_difficulty = 0;
 ir_shift = 0;
 add_app = "";
 
+% Computing the minimum distance achieved with depth images is slower than
+% without. In either case, the result is similar because the trajectories
+% are mostly straight
+use_depth = 0;
 
 %% Data for training prior, training posterior, and testing
 num_envs = 10000;
