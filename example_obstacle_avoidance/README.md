@@ -24,7 +24,7 @@ python train.py --step 0  # trains prior
 python train.py --step 1  # trains posterior
 python train.py --step 2  # computes PAC-Bayes bound
 ```
-Weights and bound values are saved into the `weights` folder. If you train your own network, change `policy_path` in `plot.py` to match `policy_path` in `train_swing.py`.
+Weights and bound values are saved into the `weights` folder. If you train your own network, change `policy_path` in `plot.py` to match `policy_path` in `train.py`.
 
 #### Testing
 Run `python plot.py` to generate the plots that were used in this example.
