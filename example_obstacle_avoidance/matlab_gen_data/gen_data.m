@@ -1,6 +1,6 @@
 clear;
 close all;
-folder = "data2/";
+folder = "data/";
 addpath('functions');
 load('matlab_files/prims.mat');
 verbose = 0;
