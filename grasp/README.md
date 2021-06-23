@@ -29,3 +29,6 @@ Run `python grasp_test.py` to compute the [derandomized PAC-Bayes](https://arxiv
 - Run `python plot_mug_bowl_results.py` to generate the plot that compares the OOD indicators between mug picking and bowl picking; Fig. 2(c) in the paper.
 
 Since the rollouts require the ShapeNet dataset, for convenience, the costs for the rollouts are provided in the `results/` folder. By setting `load=True` in `plot_mug_pos_results.py` and `plot_mug_bowl_results.py`, the saved costs are used to compute the OOD indicators.
+
+## Credits
+Code for the Franka Panda arm environment in PyBullet used for these results was borrowed from [irom-lab/PAC-Imitation](https://github.com/irom-lab/PAC-Imitation).
