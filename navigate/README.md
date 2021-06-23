@@ -1,13 +1,4 @@
-# Task-Driven Out-of-Distribution Detection
-
-
-## Grasping Example
-
-
-
-
-
-## Vision-Based Obstacle Avoidance
+# Vision-Based Obstacle Avoidance
 The code uses the following:
 - python = 3.8
 - pytorch = 1.7.1
