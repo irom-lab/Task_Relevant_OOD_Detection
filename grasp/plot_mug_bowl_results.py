@@ -19,14 +19,13 @@ if __name__ == "__main__":
     config_file = "configs/config.json"
     grasper = evaluate_grasp(config_file)
     numObjs = 10
+    cost_all = []
     
     load = True
     
     if load:
-        with open("results/p_ood_mug_bowl.txt", "rb") as fp:   #Pickling
-            p_val_list = pickle.load(fp)
-        with open("results/delta_C_mug_bowl.txt", "rb") as fp:   #Pickling
-            conf_list = pickle.load(fp)
+        with open("results/mug_bowl_costs.txt", "rb") as fp:   #Pickling
+            cost_all = pickle.load(fp)
 
     else:
         """ Distribution shift in object type """
@@ -39,24 +38,28 @@ if __name__ == "__main__":
                 obj_folder="geometry/"+object_type, 
                 gui=False
             )
-            p_val = []
-            conf = []
-            for i in range(1,len(cost_list)+1):
-                p_val.append(ood_p_value(cost_list[:i], bound))
-                _, violation = ood_confidence(cost_list[:i], bound, deltap=0.04)
-                conf.append(violation)
-            p_val_list.append(p_val)
-            conf_list.append(conf)
-        
-        with open("results/p_ood_mug_bowl.txt", "wb") as fp:   #Pickling
-            pickle.dump(p_val_list, fp)
-        with open("results/delta_C_mug_bowl.txt", "wb") as fp:   #Pickling
-            pickle.dump(conf_list, fp)
+            cost_all.append(cost_list)
+            
+        with open("results/mug_bowl_costs.txt", "wb") as fp:   #Pickling
+            pickle.dump(cost_all, fp)
+
+    p_val_list = []
+    Delta_C_list = []
+    for cost_list in cost_all:
+        p_val = []
+        conf = []
+        for i in range(1,len(cost_list)+1):
+            p_val.append(ood_p_value(cost_list[:i], bound))
+            _, violation = ood_confidence(cost_list[:i], bound, deltap=0.04)
+            conf.append(violation)
+        p_val_list.append(p_val)
+        Delta_C_list.append(conf)
+                    
     
     plot_object_type(
         list(range(1,numObjs+1)), 
         p_val_list, 
-        conf_list, 
+        Delta_C_list, 
         legend=["Mug: $1 - p$", 
                 "Mug: $\Delta C + 0.95$", 
                 "Bowl: $1 - p$", 
