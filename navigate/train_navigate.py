@@ -1,8 +1,8 @@
 import copy
 import torch
 import numpy as np
-from obsavoid.utils.util_models import load_weights, save_weights, load_data
-from obsavoid.models.models_swing import SPolicy, NSPolicy
+from utils.util_models import load_weights, save_weights, load_data
+from models.models_swing import SPolicy, NSPolicy
 import argparse
 import warnings
 warnings.filterwarnings('ignore')
@@ -180,4 +180,4 @@ if step == 2:
     # print("KL-inv", pac_bound)
     print("Pointwise PAC-Bayes", emp_cost + reg_pac_bayes_r)
 
-    np.save('obsavoid/weights/'+post_path+'.npy', (emp_cost, emp_cost + reg_pac_bayes_r))
+    np.save('weights/'+post_path+'.npy', (emp_cost, emp_cost + reg_pac_bayes_r))

@@ -14,21 +14,21 @@ pip install matplotlib scipy
 ```
 
 #### Data
-Go to [this link](https://drive.google.com/file/d/1zpqZbxp-7z3HOktoru5qvEx4ah7FBHBM/view?usp=sharing) and download the zip file of all the data used in this example. 
-Unzip the folder and place the contents into `./obsavoid/matlab_gen_data/data/`. 
-Alternatively, using Matlab, run `./obsavoid/matlab_gen_data/gen_data.m` to generate all training and testing data necessary for this example. 
+Go to [this link](https://drive.google.com/file/d/1zpqZbxp-7z3HOktoru5qvEx4ah7FBHBM/view?usp=sharing) and download the zip file of all the data used in this example.
+Unzip the folder and place the contents into `./matlab_gen_data/data/`.
+Alternatively, using Matlab, run `./matlab_gen_data/gen_data.m` to generate all training and testing data necessary for this example.
 
 #### Training
-You may skip this step and use the pre-trained network in the `./obsavoid/weights` folder. 
-This pre-trained network was deployed on the hardware setup. 
+You may skip this step and use the pre-trained network in the `./weights` folder.
+This pre-trained network was deployed on the hardware setup.
 Alternatively, run the following commands to train the network and compute the PAC-Bayes bound:
 ```
-python train_obsavoid.py --step 0  # trains prior
-python train_obsavoid.py --step 1  # trains posterior
-python train_obsavoid.py --step 2  # computes PAC-Bayes bound
+python train_navigate.py --step 0  # trains prior
+python train_navigate.py --step 1  # trains posterior
+python train_navigate.py --step 2  # computes PAC-Bayes bound
 ```
-Weights and bound values are saved into the `obsavoid/weights` folder. 
-If you train your own network, change `policy_path` in `oodd_obsavoid.py` to match `policy_path` in `train_obsavoid.py`.
+Weights and bound values are saved into the `./weights` folder.
+If you train your own network, change the variable `policy_path` in `oodd_navigate.py` to match `policy_path` in `train_navigate.py`.
 
 #### Testing
-Run `python oodd_obsavoid.py` to generate the plots and results that were used in this example.
+Run `python oodd_navigate.py` to generate the plots and results that were used in this example.

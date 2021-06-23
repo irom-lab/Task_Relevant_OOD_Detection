@@ -1,9 +1,9 @@
 import torch.nn as nn
-from obsavoid.models.layers import StochasticLinear as SLinear
-from obsavoid.models.layers import StochasticConv2d as SConv2d
-from obsavoid.models.layers import NotStochasticLinear as Linear
-from obsavoid.models.layers import NotStochasticConv2d as Conv2d
-from obsavoid.models.layers import StochasticModel
+from models.layers import StochasticLinear as SLinear
+from models.layers import StochasticConv2d as SConv2d
+from models.layers import NotStochasticLinear as Linear
+from models.layers import NotStochasticConv2d as Conv2d
+from models.layers import StochasticModel
 
 
 class NSPolicy(StochasticModel):
@@ -36,4 +36,3 @@ class NSPolicy(StochasticModel):
 class SPolicy(NSPolicy):
     def __init__(self):
         super().__init__(linear=SLinear, conv=SConv2d)
-

@@ -2,10 +2,12 @@ import numpy as np
 import warnings
 import torch
 import json
-from obsavoid.models.models_swing import SPolicy
-from obsavoid.utils.util_models import run_policy, load_data, load_weights
-from obsavoid.utils.util import plot_wind, plot_cardinality, plot_compare_precision
-from util_oodd import ood_p_value_batch, ood_confidence_batch, ood_msp_batch, ood_maxlogit_batch
+import sys
+sys.path.insert(0, '..')
+from models.models_swing import SPolicy
+from utils.util_models import run_policy, load_data, load_weights
+from utils.util import plot_wind, plot_cardinality, plot_compare_precision
+from ood_detect import ood_p_value_batch, ood_confidence_batch, ood_msp_batch, ood_maxlogit_batch
 warnings.filterwarnings('ignore')
 
 policy_path = 'post_1'
@@ -46,7 +48,7 @@ def get_task_irrelevant_data():
 
 
 def get_hardware_data():
-    data = json.load(open('obsavoid/hardware_data.json','r'))
+    data = json.load(open('hardware_data.json','r'))
     return data
 
 
@@ -183,7 +185,7 @@ policy = SPolicy()
 load_weights(policy, policy_path)
 torch.manual_seed(2)
 policy.init_xi()  # will be the same as when computing the bound since we use same seed
-params = np.load('obsavoid/weights/' + policy_path + '.npy')
+params = np.load('weights/' + policy_path + '.npy')
 upper_bound = params[1]
 
 fig1 = 1

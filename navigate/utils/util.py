@@ -25,7 +25,7 @@ def plot_compare_precision(x, ys, legend, xlabel=r"Estimated $C_{\mathcal{D}'}(\
     plt.xticks(fontsize=XTICKS_FONTSIZE)
     plt.yticks(fontsize=YTICKS_FONTSIZE)
     plot_setup()
-    plt.savefig('obsavoid/plots/swingsim_compare' + app + '.pdf')
+    plt.savefig('plots/swingsim_compare' + app + '.pdf')
 
 
 def plot_wind(ys, legend):
@@ -40,7 +40,7 @@ def plot_wind(ys, legend):
     plt.xticks(ticks=x, fontsize=XTICKS_FONTSIZE)
     plt.yticks(fontsize=YTICKS_FONTSIZE)
     plot_setup()
-    plt.savefig('obsavoid/plots/swinghardware_wind.pdf')
+    plt.savefig('plots/swinghardware_wind.pdf')
 
 
 def plot_cardinality(cdpmcd, y):
@@ -65,7 +65,7 @@ def plot_cardinality(cdpmcd, y):
     plt.xticks(fontsize=XTICKS_FONTSIZE)
     plt.yticks(fontsize=YTICKS_FONTSIZE)
     plot_setup()
-    plt.savefig('obsavoid/plots/swingsim_lowerbound.pdf')
+    plt.savefig('plots/swingsim_lowerbound.pdf')
 
 def plot_setup():
     plt.tick_params(top=False, right=False, direction='out')
