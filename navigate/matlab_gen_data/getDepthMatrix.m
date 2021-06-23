@@ -1,9 +1,7 @@
 % The problem is solved by identifying the (x,y) coordinates where the 3D
 % line's projection on the horizontal plane intersects the cylinder,
-% because working with the projection is the same problem as the one Alec
-% already has a solution to, i.e., intersection of a line with a
-% circle. Once we have the (x,y) coordinates of the intersection, we can
-% simply plug them in the equaltion of the ray to get z. 
+% Once we have the (x,y) coordinates of the intersection, we can
+% simply plug them in the equaltion of the ray to get z.
 % Source: https://math.stackexchange.com/a/2613826
 
 function deptharray = getDepthMatrix(imu, ths, phis, obs, walls, maxrng)
