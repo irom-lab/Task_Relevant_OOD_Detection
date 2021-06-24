@@ -31,4 +31,6 @@ Run `python grasp_test.py` to compute the [derandomized PAC-Bayes](https://arxiv
 Since the rollouts require the ShapeNet dataset, for convenience, the costs for the rollouts are provided in the `results/` folder. By setting `load=True` in `plot_mug_pos_results.py` and `plot_mug_bowl_results.py`, the saved costs are used to compute the OOD indicators instead.
 
 ## References
+* [ShapeNet](https://shapenet.org/)
+* [PyBullet](https://github.com/bulletphysics/bullet3)
 * [irom-lab/PAC-Imitation](https://github.com/irom-lab/PAC-Imitation)
