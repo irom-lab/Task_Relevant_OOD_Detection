@@ -1,9 +1,9 @@
 # Vision-Based Obstacle Avoidance
 The code uses the following:
 - python = 3.8
-- pytorch = 1.7.1
-- matplotlib
-- scipy
+- [pytorch](https://pytorch.org) = 1.7.1
+- [matplotlib](https://matplotlib.org)
+- [scipy](https://www.scipy.org)
 
 If you are using Anaconda, you can run the following commands to create an environment and install the necessary packages.
 ```
