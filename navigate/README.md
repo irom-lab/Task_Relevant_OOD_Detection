@@ -16,7 +16,7 @@ pip install matplotlib scipy
 #### Data
 Go to [this link](https://drive.google.com/file/d/1zpqZbxp-7z3HOktoru5qvEx4ah7FBHBM/view?usp=sharing) and download the zip file of all the data used in this example.
 Unzip the folder and place the contents into `./matlab_gen_data/data/`.
-Alternatively, using Matlab, run `./matlab_gen_data/gen_data.m` to generate all training and testing data necessary for this example.
+Alternatively, using Matlab (>= 2021a), run `./matlab_gen_data/gen_data.m` to generate all training and testing data necessary for this example.
 
 #### Training
 You may skip this step and use the pre-trained network in the `./weights` folder.
