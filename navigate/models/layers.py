@@ -195,8 +195,6 @@ class StochasticModel(nn.Module):
         self.compatible_classes = (StochasticLayer,
                                    StochasticLinear,
                                    StochasticConv2d,
-                                   # NotStochasticLinear,
-                                   # NotStochasticConv2d,
                                    )
 
     def forward(self, x):
