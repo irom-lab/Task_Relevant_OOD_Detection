@@ -30,5 +30,6 @@ python train_navigate.py --step 2  # computes PAC-Bayes bound
 Weights and bound values are saved into the `./weights` folder.
 If you train your own network, change the variable `policy_path` in `oodd_navigate.py` to match `policy_path` in `train_navigate.py`.
 
+
 #### Testing
 Run `python oodd_navigate.py` to generate the plots and results that were used in this example.
