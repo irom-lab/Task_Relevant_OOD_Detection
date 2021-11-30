@@ -50,7 +50,7 @@ if __name__ == "__main__":
         conf = []
         for i in range(1,len(cost_list)+1):
             p_val.append(ood_p_value(cost_list[:i], bound))
-            _, violation = ood_confidence(cost_list[:i], bound, deltap=0.04)
+            _, violation = ood_confidence(cost_list[:i], bound, deltap_O=0.04)
             conf.append(violation)
         p_val_list.append(p_val)
         Delta_C_list.append(conf)
@@ -60,9 +60,9 @@ if __name__ == "__main__":
         list(range(1,numObjs+1)), 
         p_val_list, 
         Delta_C_list, 
-        legend=["Mug: $1 - p$", 
-                "Mug: $\Delta C + 0.95$", 
-                "Bowl: $1 - p$", 
-                "Bowl: $\Delta C + 0.95$", 
+        legend=["Mug: $1 - p_O$", 
+                "Mug: $\Delta C_O + 0.95$", 
+                "Bowl: $1 - p_O$", 
+                "Bowl: $\Delta C_O + 0.95$", 
                 ]
     )

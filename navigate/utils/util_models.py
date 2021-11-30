@@ -1,11 +1,12 @@
 import torch
 import scipy.io
 import os
-
+import numpy as np
 
 def make_dir(dir_path):
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
+
 
 def save_weights(policy, save_file_name=''):
     make_dir('weights')
@@ -13,7 +14,7 @@ def save_weights(policy, save_file_name=''):
 
 
 def load_weights(policy, save_file_name=''):
-    policy.load_state_dict(torch.load("weights/" + save_file_name + ".pt"))
+    policy.load_state_dict(torch.load("weights/" + save_file_name + ".pt", map_location=torch.device('cpu')))
     return policy
 
 
@@ -67,8 +68,8 @@ def get_weight_samples(num_policies, file_name):
     return weights
 
 
-def load_data(app='', option=None):
-    path = "matlab_gen_data/data/"
+def load_data(app='', option=None, dataset = "data500"):
+    path = "./matlab_gen_data/data/"+dataset+"/"
     app = app + ".m"
     depth_maps = torch.Tensor(scipy.io.loadmat(path + "depth_maps" + app)['depth_maps'].astype('float32')).unsqueeze(1)
 
@@ -78,6 +79,7 @@ def load_data(app='', option=None):
     if option not in ['dist_softmax', 'prim_collision', 'prim_cost']:
         raise NotImplementedError
 
-    costs = torch.Tensor(scipy.io.loadmat(path + option + app)[option].astype('float32'))
+    cost_array = scipy.io.loadmat(path + option + app)[option].astype('float32')
+    costs = torch.Tensor(cost_array)
 
     return depth_maps, costs

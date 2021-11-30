@@ -68,7 +68,7 @@ if __name__ == "__main__":
         for cost in cost_list:
             p_val = 1 - ood_p_value(cost, bound)
             p_list.append(1 - p_val)
-            _, violation = ood_confidence(cost, bound, deltap=0.04)
+            _, violation = ood_confidence(cost, bound, deltap_O=0.04)
             violation_list.append(violation)
         p_all.append(p_list)
         Delta_C_all.append(violation_list)
@@ -77,4 +77,4 @@ if __name__ == "__main__":
     Delta_C_all = np.array(Delta_C_all).transpose()
         
     ys = [p_all, Delta_C_all+0.95]
-    plot_compare_methods(np.array(emp_cost_test), ys, legend = ["$1 - p$", "$\Delta C + 0.95$"])
+    plot_compare_methods(np.array(emp_cost_test), ys, legend = ["$1 - p_O$", "$\Delta C_O + 0.95$"])

@@ -2,7 +2,6 @@ import numpy as np
 
 
 def ood_p_value(cost, bound, ubound=True):
-    """Compute p-value"""
     violations = cost - bound if ubound else bound - cost
     violation = np.mean(violations)
     tau = max(violation, 0)
@@ -11,23 +10,27 @@ def ood_p_value(cost, bound, ubound=True):
     return 1 - p_val
 
 
-def ood_confidence(cost, bound, deltap, ubound=True):
-    """Compute Delta C"""
-    violations = cost - bound if ubound else bound - cost
+def ood_confidence(cost, bound, deltap_O, deltap_W=0.04, fpos=True):
+    # false positive: cost - bound; false negative = bound - cost
+    violations = cost - bound if fpos else bound - cost
     violation = np.mean(violations)
     m = len(cost)
-    gamma = np.sqrt(np.log(1/deltap)/(2*m))
-    # Check if Delta C = violation -  gamma > 0 for OOD detection
+    gamma = 0
+    if fpos: 
+        gamma = np.sqrt(np.log(1/deltap_O)/(2*m)) 
+    else:
+        gamma = np.sqrt(np.log(1/deltap_W)/(2*m))
+    # gamma = 0
     if violation - gamma > 0:
         return True, violation - gamma
     else:
         return False, violation - gamma
 
 
-def ood_p_value_batch(costs, bound, batch=False):
+def ood_p_value_batch(costs, bound, batch=False, ubound=True):
     ps = []
     for m in range(1,len(costs) + 1):
-        p = ood_p_value(costs[:m], bound, ubound=True)
+        p = ood_p_value(costs[:m], bound, ubound=ubound)
         ps.append(p)
     if batch:
         return ps[-1]
@@ -35,15 +38,15 @@ def ood_p_value_batch(costs, bound, batch=False):
         return ps
 
 
-def ood_confidence_batch(costs, bound, deltap=0.04, batch=False):
-    ps = []
+def ood_confidence_batch(costs, bound, deltap_O=0.04, deltap_W=0.04, batch=False, fpos=True):
+    cs = []
     for m in range(1, len(costs) + 1):
-        p = ood_confidence(costs[:m], bound, deltap=deltap, ubound=True)[1]
-        ps.append(p)
+        c = ood_confidence(costs[:m], bound, deltap_O=deltap_O, deltap_W=deltap_W, fpos=fpos)[1]
+        cs.append(c)
     if batch:
-        return ps[-1]
+        return cs[-1]
     else:
-        return ps
+        return cs
 
 
 def ood_msp_batch(model_output, batch=False):

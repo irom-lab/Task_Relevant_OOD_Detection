@@ -134,6 +134,8 @@ class StochasticLayer(nn.Module):
         logvar2 = prior.logvar.clone().detach()
         a = torch.tensor(a*1.0)
 
+        # min_logvar = torch.log((a - 1)/a) + logvar2 + eps
+        # projected_logvar = torch.max(min_logvar, logvar1)
         max_logvar = - torch.log((a - 1)/a) + logvar2 - eps
         projected_logvar = torch.min(max_logvar, logvar1)
         self.logvar = nn.Parameter(projected_logvar)
@@ -141,6 +143,8 @@ class StochasticLayer(nn.Module):
         if self.bias:
             b_logvar1 = self.b_logvar
             b_logvar2 = prior.b_logvar.clone().detach()
+            # min_b_logvar = torch.log((a - 1)/a) + b_logvar2 + eps
+            # projected_b_logvar = torch.max(min_b_logvar, b_logvar1)
             max_b_logvar = - torch.log((a - 1)/a) + b_logvar2 - eps
             projected_b_logvar = torch.min(max_b_logvar, b_logvar1)
             self.b_logvar = nn.Parameter(projected_b_logvar)
@@ -195,6 +199,8 @@ class StochasticModel(nn.Module):
         self.compatible_classes = (StochasticLayer,
                                    StochasticLinear,
                                    StochasticConv2d,
+                                   # NotStochasticLinear,
+                                   # NotStochasticConv2d,
                                    )
 
     def forward(self, x):
