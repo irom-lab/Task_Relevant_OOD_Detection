@@ -69,7 +69,7 @@ def get_train_data(dataset = 'data500'):
     return data
 
 
-def get_comparison_detections(policy, data, upper_bound, lower_bound, deltap_O = 0.04, deltap_W = 0.04, m=10, trials=20):
+def get_comparison_detections(policy, data, upper_bound, lower_bound, deltap_A = 0.04, deltap_B = 0.04, m=10, trials=20):
     ps = np.zeros((len(data), trials))
     cs = np.zeros((len(data), trials))
     msps = np.zeros((len(data), trials))
@@ -110,10 +110,10 @@ def get_comparison_detections(policy, data, upper_bound, lower_bound, deltap_O =
             # for WD detection
             p_wd = ood_p_value_batch(cost[:m], lower_bound, batch=True, ubound=False)
             p_wds.append(p_wd)
-            c_ood = ood_confidence_batch(cost[:m], upper_bound, deltap_O=deltap_O, batch=True, fpos=True)
+            c_ood = ood_confidence_batch(cost[:m], upper_bound, deltap_A=deltap_A, batch=True, ood_adverse=True)
             c_oods.append(c_ood)
-            # false negative uses lower bound (for WD detection)
-            c_wd = ood_confidence_batch(cost[:m], lower_bound, deltap_W=deltap_W, batch=True, fpos=False)
+            # false negative uses lower bound (for ood-benign detection)
+            c_wd = ood_confidence_batch(cost[:m], lower_bound, deltap_B=deltap_B, batch=True, ood_adverse=False)
             c_wds.append(c_wd)
 
             msp_ood = ood_msp_batch(model_output[:m], batch=True)
@@ -175,7 +175,7 @@ def get_detection_bound(policy, data, upper_bound, max_m=10, trials=10):
     for trial in range(trials):
         p = np.random.permutation(len(cost))
         cost = cost[p]
-        c_ood = ood_confidence_batch(cost[:max_m], upper_bound, deltap_O=0.09, batch=False)
+        c_ood = ood_confidence_batch(cost[:max_m], upper_bound, deltap_A=0.09, batch=False)
         cs[:, trial] = c_ood
 
     return cs, cdpmcd
@@ -238,7 +238,7 @@ if fig1:
 
     hardware_data = get_hardware_data()
     ps, cs = get_hardware_detections(hardware_data, upper_bound)
-    plot_wind((ps, cs), (r'$1 - p_O$', r'$\Delta C_O+0.95$'))
+    plot_wind((ps, cs), (r'$1 - p_A$', r'$\Delta C_A+0.95$'))
 
 # cardinality data
 if fig2:
@@ -291,7 +291,7 @@ if fig3:
     cs_W = np.sum(cs_W > 0, -1)/trials
 
     plot_compare_precision(x - x[5], (ps, cs, msps, maxlogits),
-                           (r'1-$p$', r'$\Delta C$', 'MSP', 'MaxLogit'),
+                           (r'1-$p_{A}$', r'$\Delta C_{A}$', 'MSP', 'MaxLogit'),
                            ylabel="Proportion Detected OOD", app="_precision")
 
 # combined detector bar graph for all datasets 
@@ -328,44 +328,44 @@ if fig4:
             print("Got Comparison Detection")
             
             # combined detector (confidence interval based) 
-            prop_ood = np.sum(cs > 0, -1)/trials # OOD when C_fp > 0 
-            prop_wd = np.sum(cs_W >= 0, -1)/trials # WD when C_fn >= 0
-            prop_unknown = 1 - prop_ood - prop_wd # other times indecipherable
+            prop_ood_a = np.sum(cs > 0, -1)/trials # OOD-adverse when C_fp > 0 
+            prop_ood_b = np.sum(cs_W >= 0, -1)/trials # OOD-benign when C_fn >= 0
+            prop_wd = 1 - prop_ood_a - prop_ood_b # other times unkown
 
             print("Confidence Interval")
-            print(prop_ood)
+            print(prop_ood_a)
+            print(prop_ood_b)
             print(prop_wd)
-            print(prop_unknown)
 
             # combined detector (p-value based) 
             alpha_O = 0.05
             alpha_W = 0.05
-            prop_ood_p = np.sum(ps >= 1-alpha_O, -1)/trials # OOD when C_fp > 0 
-            prop_wd_p = np.sum(ps_W >= 1-alpha_W, -1)/trials # WD when C_fn >= 0
-            prop_unknown_p = 1 - prop_ood_p - prop_wd_p # other times indecipherable
+            prop_ood_a_p = np.sum(ps >= 1-alpha_O, -1)/trials # OOD-adverse when C_fp > 0 
+            prop_ood_b_p = np.sum(ps_W >= 1-alpha_W, -1)/trials # OOD-benign when C_fn >= 0
+            prop_wd_p = 1 - prop_ood_a_p - prop_ood_b_p # other times indecipherable
 
             print("P-Value")
-            print(prop_ood_p)
+            print(prop_ood_a_p)
+            print(prop_ood_b_p)
             print(prop_wd_p)
-            print(prop_unknown_p)
 
             # save data for the future to make it easier to edit plot style
-            fig_4_data[d_thresh] = {'x':x-x[5], 'deltaC_ood':prop_ood, 'deltaC_wd':prop_wd, 'deltaC_unknown':prop_unknown, 
-                                    'p_ood': prop_ood_p, 'p_wd': prop_wd_p, 'p_unknown':prop_unknown_p}
+            fig_4_data[d_thresh] = {'x':x-x[5], 'deltaC_ood_a':prop_ood_a, 'deltaC_ood_b':prop_ood_b, 'deltaC_wd':prop_wd, 
+                                    'p_ood_a': prop_ood_a_p, 'p_ood_b': prop_ood_b_p, 'p_wd':prop_wd_p}
             
             np.save('plots/fig_4_data.npy', fig_4_data)
             print("Saved Plotting Data")
 
-            plot_combined_detector(x - x[5], [prop_ood, prop_wd, prop_unknown], 
-                                (r'Proportion OOD: $\Delta C_{O} > 0$'+ r" ($\delta_{O} + \delta'_{O} = 0.05$)", 
-                                r'Proportion WD: $\Delta C_{W} \geq 0$'+r" ($\delta_{W} + \delta'_{W} = 0.05$)", 'Proportion Unknown'), 
+            plot_combined_detector(x - x[5], [prop_ood_a, prop_ood_b, prop_wd], 
+                                (r'Proportion $OOD_{A}$: $\Delta C_{A} > 0$'+ r" ($\delta_{A} + \delta'_{A} = 0.05$)", 
+                                r'Proportion $OOD_{B}$: $\Delta C_{B} \geq 0$'+r" ($\delta_{B} + \delta'_{B} = 0.05$)", 'Proportion WD'), 
                                 xlabel= r"Estimated $C_{\mathcal{D}'}(\pi) - C_{\mathcal{D}}(\pi)$", ylabel = "Proportion of Environments",
                                 app="combined_detector_CI_d{}".format(ds[i]), 
                                 figtext= r"$d_{thresh} = $" + "{} mm".format(ds[i]))
 
-            plot_combined_detector(x - x[5], [prop_ood_p, prop_wd_p, prop_unknown_p], 
-                                (r"Proportion OOD: $p_{O} \leq \alpha_O$"+ r" ($\alpha_{O} = 0.05$)", 
-                                r"Proportion WD: $p_{W} \leq \alpha_W$"+r" ($\alpha_{W} = 0.05$)", 'Proportion Unknown'), 
+            plot_combined_detector(x - x[5], [prop_ood_a_p, prop_ood_b_p, prop_wd_p], 
+                                (r"Proportion $OOD_{A}$: $p_{A} \leq \alpha_A$"+ r" ($\alpha_{A} = 0.05$)", 
+                                r"Proportion $OOD_{B}$: $p_{B} \leq \alpha_B$"+r" ($\alpha_{B} = 0.05$)", 'Proportion WD'), 
                                 xlabel= r"Estimated $C_{\mathcal{D}'}(\pi) - C_{\mathcal{D}}(\pi)$", ylabel = "Proportion of Environments", 
                                 app="combined_detector_p_d{}".format(ds[i]), 
                                 figtext= r"$d_{thresh} = $" + "{} mm".format(ds[i]))
@@ -376,15 +376,15 @@ if fig4:
         d = np.load('plots/fig_4_data.npy', allow_pickle=True)
         d = d.item()
         for d_thresh, data in d.items(): 
-            plot_combined_detector(data['x'], [data['deltaC_ood'], data['deltaC_wd'], data['deltaC_unknown']], 
-                                (r'Proportion OOD: $\Delta C_{O} > 0$'+ r" ($\delta_{O} + \delta'_{O} = 0.05$)", 
-                                r'Proportion WD: $\Delta C_{W} \geq 0$'+r" ($\delta_{W} + \delta'_{W} = 0.05$)", 'Proportion Unknown'), 
+            plot_combined_detector(data['x'], [data['deltaC_ood_a'], data['deltaC_ood_b'], data['deltaC_wd']], 
+                                (r'Proportion $OOD_{A}$: $\Delta C_{A} > 0$'+ r" ($\delta_{A} + \delta'_{A} = 0.05$)", 
+                                r'Proportion $OOD_{B}$: $\Delta C_{B} \geq 0$'+r" ($\delta_{B} + \delta'_{B} = 0.05$)", 'Proportion WD'), 
                                 xlabel= r"Estimated $C_{\mathcal{D}'}(\pi) - C_{\mathcal{D}}(\pi)$", ylabel = "Proportion of Environments",
                                 app="combined_detector_CI_d{}".format(d_thresh), 
                                 figtext= r"$d_{thresh} = $" + "{} mm".format(d_thresh))
-            plot_combined_detector(data['x'], [data['p_ood'], data['p_wd'], data['p_unknown']], 
-                                (r"Proportion OOD: $p_{O} \leq \alpha_O$"+ r" ($\alpha_{O} = 0.05$)", 
-                                r"Proportion WD: $p_{W} \leq \alpha_W$"+r" ($\alpha_{W} = 0.05$)", 'Proportion Unknown'), 
+            plot_combined_detector(data['x'], [data['p_ood_a'], data['p_ood_b'], data['p_wd']], 
+                                (r"Proportion $OOD_{A}$: $p_{A} \leq \alpha_A$"+ r" ($\alpha_{A} = 0.05$)", 
+                                r"Proportion $OOD_{B}$: $p_{B} \leq \alpha_B$"+r" ($\alpha_{B} = 0.05$)", 'Proportion WD'), 
                                 xlabel= r"Estimated $C_{\mathcal{D}'}(\pi) - C_{\mathcal{D}}(\pi)$", ylabel = "Proportion of Environments", 
                                 app="combined_detector_p_d{}".format(d_thresh), 
                                 figtext= r"$d_{thresh} = $" + "{} mm".format(d_thresh))
@@ -424,18 +424,18 @@ if fig5:
             x, ps, cs, msps, maxlogits, cs_W, ps_W = get_comparison_detections(policy, OOD_data, upper_bound, lower_bound, deltap_O, deltap_W, m=m, trials=trials)
 
             # combined detector (confidence interval based) 
-            prop_ood = np.sum(cs > 0, -1)/trials # OOD when C_fp > 0 
-            prop_wd = np.sum(cs_W >= 0, -1)/trials # WD when C_fn >= 0
-            prop_unknown = 1 - prop_ood - prop_wd # other times indecipherable
+            prop_ood_a = np.sum(cs > 0, -1)/trials # OOD-adverse when C_fp > 0 
+            prop_ood_b = np.sum(cs_W >= 0, -1)/trials # OOD-benign when C_fn >= 0
+            prop_wd = 1 - prop_ood_a - prop_ood_b # other times within distribution
 
             # save data for the future to make it easier to edit plot style
-            fig_5_data[deltap_O] = {'x':x-x[5], 'deltaC_ood':prop_ood, 'deltaC_wd':prop_wd, 'deltaC_unknown':prop_unknown}
+            fig_5_data[deltap_O] = {'x':x-x[5], 'deltaC_ood_a':prop_ood_a, 'deltaC_ood_b':prop_ood_b, 'deltaC_wd':prop_wd}
             np.save('plots/fig_5_data.npy', fig_5_data)
             print("Saved Plotting Data")
 
-            plot_combined_detector(x - x[5], [prop_ood, prop_wd, prop_unknown], 
-                                (r'Proportion OOD: $\Delta C_{O} > 0$'+ r" ($\delta_{O} + \delta'_{O} = $" + "{:.2f})".format(deltap_O + 0.01), 
-                                r'Proportion WD: $\Delta C_{W} \geq 0$'+r" ($\delta_{W} + \delta'_{W} = $" + "{:.2f})".format(deltap_W + 0.01), 'Proportion Unknown'), 
+            plot_combined_detector(x - x[5], [prop_ood_a, prop_ood_b, prop_wd], 
+                                (r'Proportion $OOD_{A}$: $\Delta C_{A} > 0$'+ r" ($\delta_{A} + \delta'_{A} = $" + "{:.2f})".format(deltap_O + 0.01), 
+                                r'Proportion $OOD_{B}$: $\Delta C_{B} \geq 0$'+r" ($\delta_{B} + \delta'_{B} = $" + "{:.2f})".format(deltap_W + 0.01), 'Proportion WD'), 
                                 xlabel= r"Estimated $C_{\mathcal{D}'}(\pi) - C_{\mathcal{D}}(\pi)$", ylabel = "Proportion of Environments",
                                 app="combined_detector_CI_delta={}".format(deltap_O), 
                                 figtext= r"$d_{thresh} = 500$" + "mm")
@@ -449,9 +449,9 @@ if fig5:
             # for the skewed graph
             if deltap_O == 0.89: 
                 deltap_W = 0.09
-            plot_combined_detector(data['x'], [data['deltaC_ood'], data['deltaC_wd'], data['deltaC_unknown']], 
-                                (r'Proportion OOD: $\Delta C_{O} > 0$'+ r" ($\delta_{O} + \delta'_{O} = $" + "{:.2f})".format(deltap_O + 0.01), 
-                                r'Proportion WD: $\Delta C_{W} \geq 0$'+r" ($\delta_{W} + \delta'_{W} = $" + "{:.2f})".format(deltap_W + 0.01), 'Proportion Unknown'), 
+            plot_combined_detector(data['x'], [data['deltaC_ood_a'], data['deltaC_ood_b'], data['deltaC_wd']], 
+                                (r'Proportion $OOD_A$: $\Delta C_{A} > 0$'+ r" ($\delta_{A} + \delta'_{A} = $" + "{:.2f})".format(deltap_O + 0.01), 
+                                r'Proportion $OOD_B$: $\Delta C_{B} \geq 0$'+r" ($\delta_{B} + \delta'_{B} = $" + "{:.2f})".format(deltap_W + 0.01), 'Proportion WD'), 
                                 xlabel= r"Estimated $C_{\mathcal{D}'}(\pi) - C_{\mathcal{D}}(\pi)$", ylabel = "Proportion of Environments",
                                 app="combined_detector_CI_delta={}".format(deltap_O), 
                                 figtext= r"$d_{thresh} = 500$" + "mm")
@@ -514,16 +514,16 @@ if fig6:
             y_pw.append(ps_W)
 
             # save data for the future to make it easier to edit plot style
-            fig_6_data[d_thresh] = {'x':x-x[5], 'p_ood': ps, 'deltaC_ood':c_props, 
+            fig_6_data[d_thresh] = {'x':x-x[5], 'p_ood_a': ps, 'deltaC_ood_a':c_props, 
                                     'msp': msps, 'maxlogit': maxlogits}
             np.save('plots/fig_6_data.npy', fig_6_data)
             print("Saved Plotting Data")
             
 
             plot_compare_precision(x - x[5], (ps, c_props, msps, maxlogits),
-                            (r'$1-p_O$', r'$\Delta C_{O}$', 'MSP', 'MaxLogit'), 
+                            (r'$1-p_A$', r'$\Delta C_{A}$', 'MSP', 'MaxLogit'), 
                             xlabel = r"Estimated $C_{\mathcal{D}'}(\pi) - C_{\mathcal{D}}(\pi)$", 
-                            ylabel="Proportion Detected OOD", app="_precision_combined_d{}".format(ds[i]))
+                            ylabel="Proportion Detected OOD-adverse", app="_precision_combined_d{}".format(ds[i]))
             i = i+1
 
         legend_fp = []
@@ -532,29 +532,29 @@ if fig6:
         legend_fn_p = [] 
 
         for i, d in enumerate(ds):
-            legend_fp.append(r'$\Delta C_{O}$' + " " + r'($d_{thresh} = $' + '{})'.format(int(d)))
-            legend_fp_p.append(r'$1-p_{O}$' + " " + r'($d_{thresh} = $' + '{})'.format(int(d)))
-            legend_fn.append(r'$\Delta C_{W}$' + " " + r'($d_{thresh} = $' + '{})'.format(int(d)))
-            legend_fn_p.append(r'$1-p_{W}$' + " " + r'($d_{thresh} = $' + '{})'.format(int(d)))
+            legend_fp.append(r'$\Delta C_{A}$' + " " + r'($d_{thresh} = $' + '{})'.format(int(d)))
+            legend_fp_p.append(r'$1-p_{A}$' + " " + r'($d_{thresh} = $' + '{})'.format(int(d)))
+            legend_fn.append(r'$\Delta C_{B}$' + " " + r'($d_{thresh} = $' + '{})'.format(int(d)))
+            legend_fn_p.append(r'$1-p_{B}$' + " " + r'($d_{thresh} = $' + '{})'.format(int(d)))
 
         # behavior of false negative and false positive detector over range of values of d_thresh 
-        plot_compare_precision(costs, y_fp, legend_fp, ylabel = "Proportion Detected OOD", app = "_datasets_ood_CI", loc = 'upper left') 
-        plot_compare_precision(costs, y_fn, legend_fn, ylabel = "Proportion Detected WD", app = "_datasets_wd_CI", loc = 'upper right') 
+        plot_compare_precision(costs, y_fp, legend_fp, ylabel = "Proportion Detected OOD-adverse", app = "_datasets_ood_CI", loc = 'upper left') 
+        plot_compare_precision(costs, y_fn, legend_fn, ylabel = "Proportion Detected OOD-benign", app = "_datasets_wd_CI", loc = 'upper right') 
 
         # behavior of false negative and false positive detector over range of values of d_thresh 
-        plot_compare_precision(costs, y_po, legend_fp_p, ylabel = "Proportion Detected OOD", app = "_datasets_ood_p", loc = 'upper left') 
-        plot_compare_precision(costs, y_pw, legend_fn_p, ylabel = "Proportion Detected WD", app = "_datasets_wd_p", loc = 'upper right') 
+        plot_compare_precision(costs, y_po, legend_fp_p, ylabel = "Proportion Detected OOD-adverse", app = "_datasets_ood_p", loc = 'upper left') 
+        plot_compare_precision(costs, y_pw, legend_fn_p, ylabel = "Proportion Detected OOD-benign", app = "_datasets_wd_p", loc = 'upper right') 
 
         # save data
         fig_11_data['costs'] = costs
-        fig_11_data['deltaC_ood'] = y_fp
-        fig_11_data['deltaC_ood_legend'] = legend_fp
-        fig_11_data['deltaC_wd'] = y_fn
-        fig_11_data['deltaC_wd_legend'] = legend_fn
-        fig_11_data['ps_ood'] = y_po
-        fig_11_data['ps_ood_legend'] = legend_fp_p
-        fig_11_data['ps_wd'] = y_pw
-        fig_11_data['ps_wd_legend'] = legend_fn_p
+        fig_11_data['deltaC_ood_a'] = y_fp
+        fig_11_data['deltaC_ood_a_legend'] = legend_fp
+        fig_11_data['deltaC_ood_b'] = y_fn
+        fig_11_data['deltaC_oob_b_legend'] = legend_fn
+        fig_11_data['ps_ood_a'] = y_po
+        fig_11_data['ps_ood_a_legend'] = legend_fp_p
+        fig_11_data['ps_ood_b'] = y_pw
+        fig_11_data['ps_ood_b_legend'] = legend_fn_p
         np.save('plots/fig_11_data.npy', fig_11_data)
         print("Saved Plotting Data")
 
@@ -563,26 +563,26 @@ if fig6:
         d = np.load('plots/fig_6_data.npy', allow_pickle=True)
         d = d.item()
         for d_thresh, data in d.items(): 
-            plot_compare_precision(data['x'], (data['p_ood'], data['deltaC_ood'], data['msp'], data['maxlogit']),
-                            (r'$1-p_O$', r'$\Delta C_{O}$', 'MSP', 'MaxLogit'), 
+            plot_compare_precision(data['x'], (data['p_ood_a'], data['deltaC_ood_a'], data['msp'], data['maxlogit']),
+                            (r'$1-p_A$', r'$\Delta C_{A}$', 'MSP', 'MaxLogit'), 
                             xlabel = r"Estimated $C_{\mathcal{D}'}(\pi) - C_{\mathcal{D}}(\pi)$", 
-                            ylabel="Proportion Detected OOD", app="_precision_combined_d{}".format(d_thresh))
+                            ylabel="Proportion Detected OOD-adverse", app="_precision_combined_d{}".format(d_thresh))
         
         # across d_thresh (fig 11)
         fig_11_data = np.load('plots/fig_11_data.npy', allow_pickle=True)
         fig_11_data = fig_11_data.item()
 
         # behavior of false negative and false positive detector over range of values of d_thresh 
-        plot_compare_precision(fig_11_data['costs'], fig_11_data['deltaC_ood'], fig_11_data['deltaC_ood_legend'], 
-                               ylabel = "Proportion Detected OOD", app = "_datasets_ood_CI", loc = 'upper left') 
-        plot_compare_precision(fig_11_data['costs'], fig_11_data['deltaC_wd'], fig_11_data['deltaC_wd_legend'], 
-                               ylabel = "Proportion Detected WD", app = "_datasets_wd_CI", loc = 'upper right') 
+        plot_compare_precision(fig_11_data['costs'], fig_11_data['deltaC_ood_a'], fig_11_data['deltaC_ood_a_legend'], 
+                               ylabel = "Proportion Detected OOD-adverse", app = "_datasets_ood_a_CI", loc = 'upper left') 
+        plot_compare_precision(fig_11_data['costs'], fig_11_data['deltaC_ood_b'], fig_11_data['deltaC_ood_b_legend'], 
+                               ylabel = "Proportion Detected OOD-benign", app = "_datasets_ood_b_CI", loc = 'upper right') 
 
         # behavior of false negative and false positive detector over range of values of d_thresh 
-        plot_compare_precision(fig_11_data['costs'], fig_11_data['ps_ood'], fig_11_data['ps_ood_legend'], 
-                               ylabel = "Proportion Detected OOD", app = "_datasets_ood_p", loc = 'upper left') 
-        plot_compare_precision(fig_11_data['costs'], fig_11_data['ps_wd'], fig_11_data['ps_wd_legend'], 
-                               ylabel = "Proportion Detected WD", app = "_datasets_wd_p", loc = 'upper right')
+        plot_compare_precision(fig_11_data['costs'], fig_11_data['ps_ood_a'], fig_11_data['ps_ood_a_legend'], 
+                               ylabel = "Proportion Detected OOD-adverse", app = "_datasets_ood_a_p", loc = 'upper left') 
+        plot_compare_precision(fig_11_data['costs'], fig_11_data['ps_ood_b'], fig_11_data['ps_ood_b_legend'], 
+                               ylabel = "Proportion Detected OOD-benign", app = "_datasets_ood_b_p", loc = 'upper right')
 
 # task irrelevant data
 if fig7:

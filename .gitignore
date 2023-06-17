@@ -1,0 +1,4 @@
+/navigate/matlab_gen_data/data/data500/*
+*.DS_Store
+.ipynb_checkpoints/*
+*.ipynb   

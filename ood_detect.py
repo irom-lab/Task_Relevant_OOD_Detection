@@ -10,16 +10,16 @@ def ood_p_value(cost, bound, ubound=True):
     return 1 - p_val
 
 
-def ood_confidence(cost, bound, deltap_O, deltap_W=0.04, fpos=True):
-    # false positive: cost - bound; false negative = bound - cost
-    violations = cost - bound if fpos else bound - cost
+def ood_confidence(cost, bound, deltap_A, deltap_B=0.04, ood_adverse=True):
+    # ood_adverse: cost - bound; ood_benign = bound - cost
+    violations = cost - bound if ood_adverse else bound - cost
     violation = np.mean(violations)
     m = len(cost)
     gamma = 0
-    if fpos: 
-        gamma = np.sqrt(np.log(1/deltap_O)/(2*m)) 
+    if ood_adverse: 
+        gamma = np.sqrt(np.log(1/deltap_A)/(2*m)) 
     else:
-        gamma = np.sqrt(np.log(1/deltap_W)/(2*m))
+        gamma = np.sqrt(np.log(1/deltap_B)/(2*m))
     # gamma = 0
     if violation - gamma > 0:
         return True, violation - gamma
@@ -38,10 +38,10 @@ def ood_p_value_batch(costs, bound, batch=False, ubound=True):
         return ps
 
 
-def ood_confidence_batch(costs, bound, deltap_O=0.04, deltap_W=0.04, batch=False, fpos=True):
+def ood_confidence_batch(costs, bound, deltap_A=0.04, deltap_B=0.04, batch=False, ood_adverse=True):
     cs = []
     for m in range(1, len(costs) + 1):
-        c = ood_confidence(costs[:m], bound, deltap_O=deltap_O, deltap_W=deltap_W, fpos=fpos)[1]
+        c = ood_confidence(costs[:m], bound, deltap_A=deltap_A, deltap_B=deltap_B, ood_adverse=ood_adverse)[1]
         cs.append(c)
     if batch:
         return cs[-1]

@@ -1,12 +1,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-XLABEL_FONTSIZE = 20
-YLABEL_FONTSIZE = 20
-XTICKS_FONTSIZE = 15
-YTICKS_FONTSIZE = 15
+XLABEL_FONTSIZE = 16
+YLABEL_FONTSIZE = 16
+XTICKS_FONTSIZE = 14
+YTICKS_FONTSIZE = 14
 LEGEND_FONTSIZE = 12
-YLABEL = "OOD indicator"
+YLABEL = "OOD-adverse indicator"
 MARKERS = ['^', 'o', 's', 'X', '.', 'o', '.', 'x']
 MARKER_SIZE = 6
 LINE_COLORS = ['b', 'r', 'g', 'c', 'k', 'm', 'y', 'gray', 'indigo']
@@ -32,12 +32,12 @@ def plot_compare_precision(x, ys, legend, xlabel=r"Estimated $C_{\mathcal{D}'}(\
     plt.xticks(fontsize=XTICKS_FONTSIZE)
     plt.yticks(fontsize=YTICKS_FONTSIZE)
     plot_setup()
-    plt.savefig('plots/swingsim_compare' + app + '.pdf')
+    plt.savefig('plots/swingsim_compare' + app + '.png')
 
 def plot_wind(ys, legend):
     fig, ax = plt.subplots()
     x = [0, 25, 50, 75, 100]
-    ax.plot(x, [0.95 for _ in x], color='black', label='OOD threshold')
+    ax.plot(x, [0.95 for _ in x], color='black', label='$OOD_A$ threshold')
     ax.plot(x, ys[0], marker=MARKERS[0],markersize=MARKER_SIZE+3, linestyle='dashed', linewidth=1, color=LINE_COLORS[0], label=legend[0])
     ax.plot(x, np.array(ys[1])+0.95, marker=MARKERS[1],markersize=MARKER_SIZE+3, linestyle='dashed', linewidth=1, color=LINE_COLORS[1], label=legend[1])
     # ax.plot(x, ys+0.95, marker=MARKERS[1],markersize=MARKER_SIZE, linestyle='dashed', linewidth=1, color=LINE_COLORS[1], label=legend)
@@ -47,7 +47,7 @@ def plot_wind(ys, legend):
     plt.xticks(fontsize=XTICKS_FONTSIZE)
     plt.yticks(fontsize=YTICKS_FONTSIZE)
     plot_setup()
-    plt.savefig('plots/swinghardware_wind.pdf')
+    plt.savefig('plots/swinghardware_wind.png')
 
 def plot_cardinality(cdpmcd, y):
     fig, ax = plt.subplots()
@@ -71,7 +71,7 @@ def plot_cardinality(cdpmcd, y):
     plt.xticks(fontsize=XTICKS_FONTSIZE)
     plt.yticks(fontsize=YTICKS_FONTSIZE)
     plot_setup()
-    plt.savefig('plots/swingsim_lowerbound.pdf')
+    plt.savefig('plots/swingsim_lowerbound.png')
 
 def plot_combined_detector(x, ys, legend, xlabel= r"Estimated $C_{\mathcal{D}'}(\pi) - C_{\mathcal{D}}(\pi)$", ylabel=YLABEL, app="_combined_detector_CI", loc = 'upper left', figtext=""): 
     fig, ax = plt.subplots() 
@@ -94,7 +94,7 @@ def plot_combined_detector(x, ys, legend, xlabel= r"Estimated $C_{\mathcal{D}'}(
     plt.ylim(0,1.4)
     plot_setup()
 
-    plt.savefig('plots/swingsim_' + app + '.pdf')
+    plt.savefig('plots/swingsim_' + app + '.png')
 
 def plot_setup():
     plt.tick_params(top=False, right=False, direction='out')

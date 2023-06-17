@@ -22,9 +22,14 @@ if __name__ == "__main__":
     cost_all = []
     
     load = True
+
+    sim_results = "results/mug_bowl_costs.txt"
+    sim_output_file = "results/mug_bowl.png"
+    hardware_results = "results/hardware_experiments/mug_bowl_costs_hw.txt"
+    hardware_output_file = "results/hardware_experiments/mug_bowl_hw.png"
     
     if load:
-        with open("results/mug_bowl_costs.txt", "rb") as fp:   #Pickling
+        with open(sim_results, "rb") as fp:   #Pickling
             cost_all = pickle.load(fp)
 
     else:
@@ -50,7 +55,7 @@ if __name__ == "__main__":
         conf = []
         for i in range(1,len(cost_list)+1):
             p_val.append(ood_p_value(cost_list[:i], bound))
-            _, violation = ood_confidence(cost_list[:i], bound, deltap_O=0.04)
+            _, violation = ood_confidence(cost_list[:i], bound, deltap_A=0.04)
             conf.append(violation)
         p_val_list.append(p_val)
         Delta_C_list.append(conf)
@@ -60,9 +65,10 @@ if __name__ == "__main__":
         list(range(1,numObjs+1)), 
         p_val_list, 
         Delta_C_list, 
-        legend=["Mug: $1 - p_O$", 
-                "Mug: $\Delta C_O + 0.95$", 
-                "Bowl: $1 - p_O$", 
-                "Bowl: $\Delta C_O + 0.95$", 
-                ]
+        legend=["Mug: $1 - p_A$", 
+                "Mug: $\Delta C_A + 0.95$", 
+                "Bowl: $1 - p_A$", 
+                "Bowl: $\Delta C_A + 0.95$", 
+                ],
+        output_file_name=sim_output_file
     )
